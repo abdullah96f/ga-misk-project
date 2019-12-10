@@ -1,0 +1,8 @@
+
+{
+    "cityList":[ 
+    {"riyadh" : "Riyadh"},
+    {"jeddah" : "Jeddah"},
+    {"khobar" : "khobar"}
+    ]
+}

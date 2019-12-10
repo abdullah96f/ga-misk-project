@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Document</title>
+</head>
+<body>
+       <div>
+            <h1>Welcome find your city venues by one click</h1>
+            <div>
+            <input type="email" placeholder="email" id="email" />
+            <input type="password" placeholder="password" id="password" />
+            <input type="button" id="login" title="Login" width="100">
+            </div>
+       </div>
+           <div>
+                <input id="search" type="button" title="Search" />
+                <input type="text"  id="near">
+               <p>section:
+                   <select id="section"> </select>
+               </p>
+              
+               <p>price:
+                    <select id="price">  </select> </p>
+                
+           </div>
+
+           <div>
+               <ul id="venuesList"> </ul> 
+           </div>
+
+           <div >
+                <p>+++++++++++++++++++++++++++++++++</p>
+                <p> History </p>
+                <p>+++++++++++++++++++++++++++++++++</p>
+                <ul id="venuesHistory" ></ul>
+           </div>
+</body>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.5.2/firebase.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAYXihBTn8Qjy3ESrkZO3eGQh8SzBiAJLM",
+    authDomain: "ga-js-d164a.firebaseapp.com",
+    databaseURL: "https://ga-js-d164a.firebaseio.com",
+    projectId: "ga-js-d164a",
+    storageBucket: "ga-js-d164a.appspot.com",
+    messagingSenderId: "764406369847",
+    appId: "1:764406369847:web:d6016bb0a81a90a8c539b2",
+    measurementId: "G-N2SCE7GY34"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="main.js" type="text/javascript" charset="utf-8" async defer></script>
+</html>
