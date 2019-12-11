@@ -5,8 +5,10 @@
 //ENKB1IYJGRKXJKZBBCXMD423RZYMXNX0MZLTGMREHCF45VFY
 
 
-const $loginButton = $("#login");
+const $logButton = $("#log");
+const $createAcountButton = $("#createAcount");
 const $searchButton = $("#search");
+const $loadButton = $("#load");
 const $venuesList = $("#venuesList");
 const $venuesHistory = $("#venuesHistory")
 const urlSearch = 'https://api.foursquare.com/v2/venues/explore?';
@@ -21,6 +23,13 @@ var v= 20191201;
 var limit = 10
 var userId ;
 var upHistoryList =[];
+
+//---
+const HistoryCallsLimit = 2;
+ /* limit set to 2 calls, cause of regular calls plan.
+read: https://developer.foursquare.com/docs/api/troubleshooting/rate-limits 
+---
+*/
 
 function ImportDataList(){
     //change late... different file
@@ -37,10 +46,10 @@ return {
      {"section": "art"}
  ],
  "prices":[
-     {"price": "1"},
-     {"price": "2"},
-     {"price": "3"},
-     {"price": "4"}
+     {"price": "1" ,"aliasing":"$" },
+     {"price": "2", "aliasing":"$$"},
+     {"price": "3" ,"aliasing":"$$$"},
+     {"price": "4","aliasing":"$$$$"}
  ]
 }
 
@@ -52,6 +61,7 @@ firebase.auth().onAuthStateChanged(function(user) {
       let user = firebase.auth().currentUser;
       if (user) {   
             userId = user.uid
+            LogButtonText(true);
             LoadHistory(userId)
         // User is signed in.
       } else {
@@ -64,6 +74,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 function Logout(){
   firebase.auth().signOut().then(function() {
     // Sign-out successful.
+     LogButtonText(false)
      userId = null;
   }).catch(function(error) {
     // An error happened.
@@ -81,40 +92,69 @@ function Login(){
       });
 }
 
+function CreateUser(){
+    email = $('#email').val();
+    password = $('#password').val();
+    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        alert(errorMessage)
+        // ...
+      });
+}
+
 $(document).ready(function() {
     data = ImportDataList()
-   if ('refresh' == SelectOptions('section' , data ,"sections" ,'section') ){
+   if ('refresh' == SelectOptions('section' , data ,"sections" ,'section', false) ){
          alert('refresh the page')
    }
-   if ('refresh' == SelectOptions('price' , data ,"prices" ,'price') ){
+   if ('refresh' == SelectOptions('price' , data ,"prices" ,'price', true) ){
     alert('refresh the page')
 }
 
 })
 
-$loginButton.click(function(){  
-    Login();
+$createAcountButton.click(function(){
+    CreateUser();
+})
+
+$logButton.click(function(){  
+      if($logButton.val() == 'login'){
+        Login();
+      }else{
+      Logout();
+      }
 });
 
-$searchButton.click(function (){
-        
+$searchButton.click(function (){  
+    if($searchButton.val()== 'Search')
         GetListData( urlSearch , Query( InitializeSearch() ) ,'search');
+        else{
+              ClearSearch()
+        }
 });
 
-function SelectOptions(optionElemnts ,data ,lookup,value){
-    
-let $selectOption =inputValues.findIndex(function(element){
-        return element == optionElemnts
-});
-    if($selectOption == -1 || data == undefined ){
-     return 'refresh';
-    }
-     InitializeSelectOptions(inputValues[$selectOption],data , lookup,value)
+$loadButton.click(function(){
+        GetListData( urlSearch , Query( InitializeSearch() ) ,'search');
+})
+
+function ClearSearch(){
+    $searchButton.attr('value', 'Search')
+    $loadButton.attr('class' ,'myButton hide')
+    $venuesList.empty();
+    offset=0;
+
 }
 
-function InitializeSelectOptions($selectOption, data , lookup , value){  
+function SelectOptions(selectOption, data , lookup , value ,aliasing){  
+     let $select = $('#'+selectOption);
     for(let key of data[lookup]){
-    $('#'+$selectOption).append(new Option(key[value]))
+           if(aliasing){
+            $select.append($('<option>').append(key['aliasing']).val(key[value]))
+           }else{
+          $select.append(new Option(key[value])) 
+        }
     }
 }
 
@@ -127,7 +167,7 @@ function InitializeSearch(){
           offset: offset
     };
         for(let i=0; i < inputValues.length ;i++){
-           if( $('#'+inputValues[i]).val() != ''){
+           if( $('#'+inputValues[i]).val() != '' &&  $('#'+inputValues[i]).val() != null){
                     searchList[`${inputValues[i]}`] =  $(`#${inputValues[i]}`).val();             
            }
         }
@@ -138,8 +178,7 @@ function Query(list){
         let query=''
          for(let key in list){
             query += `&${key}=${list[key]}`
-         }
-        
+         }       
     return query
 }
 
@@ -151,7 +190,9 @@ function  GetListData(url,query, type){
 
     if(type == 'search'){
          offset +=10
-        HandleSearchDataList(resJson) 
+        HandleSearchDataList(resJson)
+        $searchButton.attr('value', 'Clear')
+        $loadButton.attr('class' ,'myButton view')
     }else if(type == 'find'){
          callBackHistory(resJson)
        }
@@ -172,7 +213,10 @@ function SaveHistory(){
 
 function LoadHistory(userId){
      let dbRefObject = database.ref().child('users/' + userId + '/history'); 
-      dbRefObject.on('value', snap=> HandleHistoryDataList(snap.val()) );
+      dbRefObject.on('value', snap=>{ 
+          if(snap.val() !=null){
+           HandleHistoryDataList(snap.val())} 
+        });
 }
 
 function callBackHistory(item){
@@ -184,7 +228,7 @@ function HandleHistoryDataList(res){
        for(item of res){
          GetListData(urlFind+item+'?' , Query({v:v}) ,  'find') 
          i++;
-         if(i==10) break;
+         if(i==HistoryCallsLimit) break;
         }
 } 
 
@@ -204,6 +248,14 @@ function DisplayHistory(item){
 
 function Display(item){
         $venuesList.append( CreateListItem(item.venue.name , item.venue.location.address) )
+}
+
+function LogButtonText(flag){
+      if(flag){
+         $logButton.attr('value', 'logout');
+      }else{
+        $logButton.attr('value', 'login');
+      }
 }
 
 function CreateListItem(name,address){

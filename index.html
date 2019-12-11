@@ -2,20 +2,25 @@
 <html lang="en">
 <head>
 
-    <title>Document</title>
+    <title>Foursquar API</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+
+<body class="background">
        <div>
             <h1>Welcome find your city venues by one click</h1>
-            <div>
-            <input type="email" placeholder="email" id="email" />
-            <input type="password" placeholder="password" id="password" />
-            <input type="button" id="login" title="Login" width="100">
-            </div>
        </div>
+       <div class="Logline">
+            <input class="input" type="email" placeholder="email" id="email" />
+            <input class="input" type="password" placeholder="password" id="password" />
+            <input class="myButton" type="button" id="log" value="login"/>
+            <input class="myButton" type="button" id="createAcount" value="Create"/>
+            
+            </div>
+            
            <div>
-                <input id="search" type="button" title="Search" />
-                <input type="text"  id="near">
+                <input  class="input" type="text" placeholder="city"  id="near">
+                <input class="myButton" id="search" type="button" value="Search" />
                <p>section:
                    <select id="section"> </select>
                </p>
@@ -27,16 +32,15 @@
 
            <div>
                <ul id="venuesList"> </ul> 
+               <input class="myButton hide" id="load" type="button" value="find more"/>
            </div>
 
            <div >
-                <p>+++++++++++++++++++++++++++++++++</p>
+                <p>-------------------------------</p>
                 <p> History </p>
-                <p>+++++++++++++++++++++++++++++++++</p>
                 <ul id="venuesHistory" ></ul>
            </div>
 </body>
-
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-app.js"></script>
 
